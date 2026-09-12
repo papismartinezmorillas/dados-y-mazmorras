@@ -1,0 +1,1298 @@
+```html
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dados y Mazmorras</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #f2f2f2;
+            font-family: Arial, sans-serif;
+        }
+
+        .contenedor {
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        h1 {
+            margin-top: 0;
+            text-align: center;
+        }
+
+        .fila {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .fila label {
+            min-width: 170px;
+            font-weight: bold;
+        }
+
+        input {
+            padding: 7px 9px;
+            border: 1px solid #aaa;
+            border-radius: 5px;
+            font-size: 15px;
+        }
+
+        #nombreCuadrilla {
+            flex: 1;
+        }
+
+        #semilla {
+            flex: 1;
+        }
+
+        button {
+            padding: 8px 14px;
+            border: 1px solid #888;
+            border-radius: 5px;
+            background: #e6e6e6;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        button:hover {
+            background: #d5d5d5;
+        }
+
+        .boton-generar {
+            display: block;
+            width: 100%;
+            margin: 20px 0;
+            padding: 12px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .seccion {
+            margin-top: 20px;
+            border: 1px solid #bbb;
+            border-radius: 7px;
+            overflow: hidden;
+        }
+
+        .titulo-seccion {
+            padding: 10px 15px;
+            background: #e5e5e5;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .jugador {
+            display: grid;
+            grid-template-columns: 35px 190px 80px 1fr;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border-top: 1px solid #ddd;
+        }
+
+        .numero {
+            font-weight: bold;
+            text-align: right;
+        }
+
+        .nombre-jugador {
+            width: 100%;
+        }
+
+        .at {
+            white-space: nowrap;
+        }
+
+        .rasgos {
+            font-family: Consolas, monospace;
+        }
+
+        .informacion {
+            margin-top: 10px;
+            text-align: center;
+            color: #666;
+            font-size: 13px;
+        }
+
+        /* -----------------------------------
+           COMPARTIR
+           ----------------------------------- */
+
+        .compartir {
+            margin-top: 25px;
+            border: 1px solid #bbb;
+            border-radius: 7px;
+            overflow: hidden;
+        }
+
+        .titulo-compartir {
+            padding: 10px 15px;
+            background: #e5e5e5;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .contenido-compartir {
+            padding: 15px;
+        }
+
+        .boton-compartir {
+            margin-bottom: 12px;
+        }
+
+        #textoCompartir {
+            width: 100%;
+            min-height: 180px;
+            padding: 10px;
+            resize: vertical;
+            border: 1px solid #aaa;
+            border-radius: 5px;
+            font-family: Consolas, monospace;
+            font-size: 14px;
+        }
+
+        @media (max-width: 700px) {
+
+            .jugador {
+                grid-template-columns: 30px 1fr;
+            }
+
+            .at,
+            .rasgos {
+                grid-column: 2;
+            }
+
+            .fila {
+                flex-wrap: wrap;
+            }
+
+            .fila label {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="contenedor">
+
+    <h1>Dados y Mazmorras</h1>
+
+
+    <!-- NOMBRE DE LA CUADRILLA -->
+
+    <div class="fila">
+
+        <label for="nombreCuadrilla">
+            Nombre de la cuadrilla:
+        </label>
+
+        <input
+            type="text"
+            id="nombreCuadrilla"
+        >
+
+    </div>
+
+
+    <!-- SEMILLA -->
+
+    <div class="fila">
+
+        <label for="semilla">
+            Semilla:
+        </label>
+
+        <input
+            type="number"
+            id="semilla"
+        >
+
+        <button onclick="cargarSemilla()">
+            Cargar semilla
+        </button>
+
+    </div>
+
+
+    <!-- BOTÓN GENERAR -->
+
+    <button
+        class="boton-generar"
+        onclick="nuevaCuadrilla()"
+    >
+        GENERAR NUEVA CUADRILLA
+    </button>
+
+
+    <!-- RESULTADOS -->
+
+    <div id="resultados"></div>
+
+
+    <div
+        class="informacion"
+        id="informacionSemilla"
+    ></div>
+
+
+    <!-- COMPARTIR CUADRILLA -->
+
+    <div class="compartir">
+
+        <div class="titulo-compartir">
+            Comparte la cuadrilla
+        </div>
+
+        <div class="contenido-compartir">
+
+            <button
+                class="boton-compartir"
+                onclick="generarTextoCompartir()"
+            >
+                GENERAR TEXTO PARA COMPARTIR
+            </button>
+
+            <textarea
+                id="textoCompartir"
+                readonly
+                placeholder="Aquí aparecerá el texto de la cuadrilla..."
+            ></textarea>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+    // ===================================
+    // PRNG CON SEMILLA - MULBERRY32
+    // ===================================
+
+    let estadoAleatorio = 1;
+
+
+    function inicializarSemilla(semilla) {
+
+        estadoAleatorio =
+            Number(semilla) >>> 0;
+
+        if (estadoAleatorio === 0) {
+            estadoAleatorio = 1;
+        }
+    }
+
+
+    function aleatorio() {
+
+        let t =
+            estadoAleatorio += 0x6D2B79F5;
+
+        t =
+            Math.imul(
+                t ^ (t >>> 15),
+                t | 1
+            );
+
+        t ^= t +
+            Math.imul(
+                t ^ (t >>> 7),
+                t | 61
+            );
+
+        return (
+            (
+                t ^ (t >>> 14)
+            ) >>> 0
+        ) / 4294967296;
+    }
+
+
+    function randint(min, max) {
+
+        return Math.floor(
+            aleatorio() * (max - min + 1)
+        ) + min;
+    }
+
+
+    // ===================================
+    // TIRADAS
+    // ===================================
+
+    function tirarD6() {
+
+        return randint(1, 6);
+    }
+
+
+    function tirarD8() {
+
+        return randint(1, 8);
+    }
+
+
+    function tirar2D6() {
+
+        return tirarD6() + tirarD6();
+    }
+
+
+    // ===================================
+    // GENERADOR DE NOMBRES
+    // ===================================
+
+    const inicios = [
+        "Al", "Bel", "Cor", "Dar", "El", "Fal",
+        "Gar", "Hel", "Kor", "Lor", "Mor", "Nar",
+        "Or", "Ral", "Sar", "Tal", "Val", "Zor",
+        "Bri", "Dra", "Eri", "Fen", "Gal", "Iri",
+        "Ka", "Lyr", "Ma", "Nor", "Syl", "Ther"
+    ];
+
+
+    const medios = [
+        "a", "e", "i", "o",
+        "an", "ar", "el", "en",
+        "ir", "or", "un",
+        "ae", "ia", "io", "ur",
+        "al", "er", "il", "os"
+    ];
+
+
+    const finales = [
+        "dor", "dan", "ric", "mir", "las",
+        "ron", "thar", "len", "var", "nir",
+        "dun", "gar", "ion",
+        "iel", "ias", "or", "us",
+        "eth", "ael", "wyn", "oth"
+    ];
+
+
+    function elegir(lista) {
+
+        return lista[
+            randint(0, lista.length - 1)
+        ];
+    }
+
+
+    function generarNombre() {
+
+        const estructura =
+            randint(1, 3);
+
+
+        if (estructura === 2) {
+
+            return (
+                elegir(inicios) +
+                elegir(medios) +
+                elegir(medios) +
+                elegir(finales)
+            );
+
+        }
+
+
+        return (
+            elegir(inicios) +
+            elegir(medios) +
+            elegir(finales)
+        );
+    }
+
+
+    // ===================================
+    // NOMBRE DE CUADRILLA
+    // ===================================
+
+    const nombresCuadrilla = [
+
+        "Los Aventureros",
+        "La Compañía",
+        "Los Errantes",
+        "Los Destripamazmorras",
+        "La Hermandad",
+        "Los Sin Nombre",
+        "Los Buscavidas",
+        "La Cuadrilla",
+        "Los Hijos del Caos",
+        "Los Mataorcos",
+        "La Última Esperanza",
+        "Los Condenados",
+        "Los Temerarios",
+        "La Guardia Negra",
+        "Los Inconscientes"
+
+    ];
+
+
+    function generarNombreCuadrilla() {
+
+        return elegir(
+            nombresCuadrilla
+        );
+    }
+
+
+    // ===================================
+    // RASGO POSITIVO
+    // ===================================
+
+    function generarRasgo() {
+
+        const resultado =
+            tirar2D6();
+
+
+        if (resultado === 2) {
+            return ["Ágil+", "Tenaz+"];
+        }
+
+
+        if (resultado === 3) {
+            return ["Ágil+"];
+        }
+
+
+        if (resultado === 4) {
+            return ["Tenaz+"];
+        }
+
+
+        if (
+            resultado >= 5 &&
+            resultado <= 9
+        ) {
+            return [];
+        }
+
+
+        if (resultado === 10) {
+            return ["Poderoso+"];
+        }
+
+
+        if (resultado === 11) {
+            return ["Hábil+"];
+        }
+
+
+        if (resultado === 12) {
+            return ["Poderoso++"];
+        }
+
+    }
+
+
+    // ===================================
+    // RASGO NEGATIVO
+    // ===================================
+
+    function generarRasgoNegativo() {
+
+        const resultado =
+            tirarD6();
+
+
+        if (resultado <= 2) {
+            return "Poderoso-";
+        }
+
+
+        if (resultado === 3) {
+            return "Hábil-";
+        }
+
+
+        if (resultado === 4) {
+            return "Ágil-";
+        }
+
+
+        if (resultado === 5) {
+            return "Tenaz-";
+        }
+
+
+        return "Poderoso--";
+    }
+
+
+    // ===================================
+    // COMPATIBILIDAD DE RASGOS
+    // ===================================
+
+    function rasgoCompatible(
+        jugador,
+        negativo
+    ) {
+
+        const rasgos =
+            jugador.rasgos;
+
+
+        if (
+            negativo === "Poderoso-" ||
+            negativo === "Poderoso--"
+        ) {
+
+            if (
+                rasgos.includes("Poderoso+") ||
+                rasgos.includes("Poderoso++")
+            ) {
+                return false;
+            }
+        }
+
+
+        if (
+            negativo === "Hábil-" &&
+            rasgos.includes("Hábil+")
+        ) {
+            return false;
+        }
+
+
+        if (
+            negativo === "Ágil-" &&
+            rasgos.includes("Ágil+")
+        ) {
+            return false;
+        }
+
+
+        if (
+            negativo === "Tenaz-" &&
+            rasgos.includes("Tenaz+")
+        ) {
+            return false;
+        }
+
+
+        return true;
+    }
+
+
+    // ===================================
+    // CREAR JUGADOR
+    // ===================================
+
+    function crearJugador() {
+
+        return {
+
+            nombre:
+                generarNombre(),
+
+            aventura:
+                tirarD8() + 23,
+
+            rasgos: [],
+
+            huecos: 2
+
+        };
+
+    }
+
+
+    // ===================================
+    // GENERAR RASGOS
+    // ===================================
+
+    function generarRasgos(
+        cuadrilla
+    ) {
+
+        let totalRasgosPositivos = 0;
+
+
+        for (
+            const jugador of cuadrilla
+        ) {
+
+            const rasgos =
+                generarRasgo();
+
+
+            for (
+                const rasgo of rasgos
+            ) {
+
+                jugador.rasgos.push(
+                    rasgo
+                );
+
+            }
+
+
+            jugador.huecos -=
+                rasgos.length;
+
+
+            totalRasgosPositivos +=
+                rasgos.length;
+
+        }
+
+
+        if (
+            totalRasgosPositivos > 4
+        ) {
+
+            const rasgoNegativo =
+                generarRasgoNegativo();
+
+
+            const candidatos =
+                cuadrilla.filter(
+                    jugador =>
+
+                        jugador.huecos > 0 &&
+
+                        rasgoCompatible(
+                            jugador,
+                            rasgoNegativo
+                        )
+                );
+
+
+            if (
+                candidatos.length > 0
+            ) {
+
+                const jugador =
+                    elegir(candidatos);
+
+
+                jugador.rasgos.push(
+                    rasgoNegativo
+                );
+
+
+                jugador.huecos--;
+
+            }
+
+        }
+
+    }
+
+
+    // ===================================
+    // CREAR CUADRILLA
+    // ===================================
+
+    function crearCuadrilla() {
+
+        const cuadrilla = [];
+
+        const nombresUsados =
+            new Set();
+
+
+        while (
+            cuadrilla.length < 7
+        ) {
+
+            const jugador =
+                crearJugador();
+
+
+            if (
+                !nombresUsados.has(
+                    jugador.nombre
+                )
+            ) {
+
+                cuadrilla.push(
+                    jugador
+                );
+
+                nombresUsados.add(
+                    jugador.nombre
+                );
+
+            }
+
+        }
+
+
+        generarRasgos(
+            cuadrilla
+        );
+
+
+        cuadrilla.sort(
+            (a, b) =>
+                b.aventura -
+                a.aventura
+        );
+
+
+        return cuadrilla;
+
+    }
+
+
+    // ===================================
+    // MOSTRAR JUGADOR
+    // ===================================
+
+    function mostrarJugador(
+        jugador,
+        numero
+    ) {
+
+        const div =
+            document.createElement(
+                "div"
+            );
+
+        div.className =
+            "jugador";
+
+
+        // Número
+
+        const numeroDiv =
+            document.createElement(
+                "div"
+            );
+
+        numeroDiv.className =
+            "numero";
+
+        numeroDiv.textContent =
+            numero + ".";
+
+
+        // Nombre editable
+
+        const nombre =
+            document.createElement(
+                "input"
+            );
+
+        nombre.type = "text";
+
+        nombre.className =
+            "nombre-jugador";
+
+        nombre.value =
+            jugador.nombre;
+
+
+        // Guardamos el input en el jugador
+        // para poder recuperar posteriormente
+        // el nombre editado.
+
+        jugador.elementoNombre =
+            nombre;
+
+
+        // AT
+
+        const at =
+            document.createElement(
+                "div"
+            );
+
+        at.className =
+            "at";
+
+        at.textContent =
+            "AT: " +
+            jugador.aventura;
+
+
+        // Rasgos
+
+        const rasgos =
+            document.createElement(
+                "div"
+            );
+
+        rasgos.className =
+            "rasgos";
+
+
+        if (
+            jugador.rasgos.length > 0
+        ) {
+
+            rasgos.textContent =
+                "Rasgos: " +
+                jugador.rasgos.join(", ");
+
+        } else {
+
+            rasgos.textContent =
+                "Rasgos: Sin rasgos";
+
+        }
+
+
+        div.appendChild(
+            numeroDiv
+        );
+
+        div.appendChild(
+            nombre
+        );
+
+        div.appendChild(
+            at
+        );
+
+        div.appendChild(
+            rasgos
+        );
+
+
+        return div;
+
+    }
+
+
+    // ===================================
+    // MOSTRAR CUADRILLA
+    // ===================================
+
+    function mostrarCuadrilla(
+        cuadrilla
+    ) {
+
+        const resultados =
+            document.getElementById(
+                "resultados"
+            );
+
+
+        resultados.innerHTML =
+            "";
+
+
+        // TITULARES
+
+        const titulares =
+            document.createElement(
+                "div"
+            );
+
+        titulares.className =
+            "seccion";
+
+
+        const tituloTitulares =
+            document.createElement(
+                "div"
+            );
+
+        tituloTitulares.className =
+            "titulo-seccion";
+
+        tituloTitulares.textContent =
+            "TITULARES";
+
+
+        titulares.appendChild(
+            tituloTitulares
+        );
+
+
+        for (
+            let i = 0;
+            i < 5;
+            i++
+        ) {
+
+            titulares.appendChild(
+                mostrarJugador(
+                    cuadrilla[i],
+                    i + 1
+                )
+            );
+
+        }
+
+
+        resultados.appendChild(
+            titulares
+        );
+
+
+        // RESERVAS
+
+        const reservas =
+            document.createElement(
+                "div"
+            );
+
+        reservas.className =
+            "seccion";
+
+
+        const tituloReservas =
+            document.createElement(
+                "div"
+            );
+
+        tituloReservas.className =
+            "titulo-seccion";
+
+        tituloReservas.textContent =
+            "RESERVAS";
+
+
+        reservas.appendChild(
+            tituloReservas
+        );
+
+
+        for (
+            let i = 5;
+            i < 7;
+            i++
+        ) {
+
+            reservas.appendChild(
+                mostrarJugador(
+                    cuadrilla[i],
+                    i + 1
+                )
+            );
+
+        }
+
+
+        resultados.appendChild(
+            reservas
+        );
+
+    }
+
+
+    // ===================================
+    // CONVERTIR RASGO A FORMATO CORTO
+    // ===================================
+
+    function rasgoCorto(rasgo) {
+
+        if (
+            rasgo.startsWith("Ágil")
+        ) {
+
+            return "A" +
+                rasgo.substring(4);
+
+        }
+
+
+        if (
+            rasgo.startsWith("Tenaz")
+        ) {
+
+            return "T" +
+                rasgo.substring(5);
+
+        }
+
+
+        if (
+            rasgo.startsWith("Hábil")
+        ) {
+
+            return "H" +
+                rasgo.substring(5);
+
+        }
+
+
+        if (
+            rasgo.startsWith("Poderoso")
+        ) {
+
+            return "P" +
+                rasgo.substring(8);
+
+        }
+
+
+        return rasgo;
+    }
+
+
+    // ===================================
+    // GENERAR TEXTO PARA COMPARTIR
+    // ===================================
+
+    function generarTextoCompartir() {
+
+        if (
+            !cuadrillaActual
+        ) {
+            return;
+        }
+
+
+        let texto = document.getElementById("nombreCuadrilla").value + "\n\n";
+texto += "Titulares:\n";
+
+
+        // TITULARES
+
+        for (
+            let i = 0;
+            i < 5;
+            i++
+        ) {
+
+            const jugador =
+                cuadrillaActual[i];
+
+
+            const nombre =
+                jugador.elementoNombre
+                    ? jugador.elementoNombre.value
+                    : jugador.nombre;
+
+
+            let rasgos = "";
+
+
+            if (
+                jugador.rasgos.length > 0
+            ) {
+
+                rasgos =
+                    jugador.rasgos
+                        .map(rasgoCorto)
+                        .join(" ");
+
+            }
+
+
+            texto +=
+                nombre +
+                (rasgos ? " " + rasgos : "") +
+                " " +
+                jugador.aventura +
+                "\n";
+
+        }
+
+
+        texto +=
+            "\nReservas:\n";
+
+
+        // RESERVAS
+
+        for (
+            let i = 5;
+            i < 7;
+            i++
+        ) {
+
+            const jugador =
+                cuadrillaActual[i];
+
+
+            const nombre =
+                jugador.elementoNombre
+                    ? jugador.elementoNombre.value
+                    : jugador.nombre;
+
+
+            let rasgos = "";
+
+
+            if (
+                jugador.rasgos.length > 0
+            ) {
+
+                rasgos =
+                    jugador.rasgos
+                        .map(rasgoCorto)
+                        .join(" ");
+
+            }
+
+
+            texto +=
+                nombre +
+                (rasgos ? " " + rasgos : "") +
+                " " +
+                jugador.aventura +
+                "\n";
+
+        }
+
+
+        document.getElementById(
+            "textoCompartir"
+        ).value =
+            texto.trim();
+
+    }
+
+
+    // ===================================
+    // CUADRILLA ACTUAL
+    // ===================================
+
+    let cuadrillaActual = null;
+
+
+    // ===================================
+    // CARGAR CUADRILLA CON SEMILLA
+    // ===================================
+
+    function cargarCuadrilla(
+        semilla
+    ) {
+
+        inicializarSemilla(
+            semilla
+        );
+
+
+        document.getElementById(
+            "nombreCuadrilla"
+        ).value =
+            generarNombreCuadrilla();
+
+
+        cuadrillaActual =
+            crearCuadrilla();
+
+
+        mostrarCuadrilla(
+            cuadrillaActual
+        );
+
+
+        document.getElementById(
+            "textoCompartir"
+        ).value =
+            "";
+
+
+        document.getElementById(
+            "informacionSemilla"
+        ).textContent =
+            "Semilla cargada: " +
+            semilla;
+
+    }
+
+
+    // ===================================
+    // GENERAR NUEVA CUADRILLA
+    // ===================================
+
+    function nuevaCuadrilla() {
+
+        const nuevaSemilla =
+            Math.floor(
+                Math.random() *
+                999999999
+            ) + 1;
+
+
+        document.getElementById(
+            "semilla"
+        ).value =
+            nuevaSemilla;
+
+
+        cargarCuadrilla(
+            nuevaSemilla
+        );
+
+    }
+
+
+    // ===================================
+    // CARGAR SEMILLA MANUAL
+    // ===================================
+
+    function cargarSemilla() {
+
+        const campo =
+            document.getElementById(
+                "semilla"
+            );
+
+
+        const semilla =
+            Number(campo.value);
+
+
+        if (
+            !Number.isInteger(semilla)
+        ) {
+
+            alert(
+                "La semilla debe ser un número entero."
+            );
+
+            return;
+        }
+
+
+        cargarCuadrilla(
+            semilla
+        );
+
+    }
+
+
+    // ===================================
+    // INICIO
+    // ===================================
+
+    const semillaInicial =
+        Math.floor(
+            Math.random() *
+            999999999
+        ) + 1;
+
+
+    document.getElementById(
+        "semilla"
+    ).value =
+        semillaInicial;
+
+
+    cargarCuadrilla(
+        semillaInicial
+    );
+
+</script>
+
+</body>
+</html>
+```
