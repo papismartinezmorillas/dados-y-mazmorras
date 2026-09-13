@@ -1,195 +1,486 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
     <title>Dados y Mazmorras</title>
 
+
     <style>
+
         * {
             box-sizing: border-box;
         }
 
+
+        /* ===================================
+           FONDO GENERAL
+           =================================== */
+
         body {
+
             margin: 0;
             padding: 20px;
-            background: #f2f2f2;
+
             font-family: Arial, sans-serif;
+
+            background-color: #111;
+
+            background-image:
+                url("fondo.png");
+
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+
+            min-height: 100vh;
         }
+
+
+        /* ===================================
+           CONTENEDOR PRINCIPAL
+           =================================== */
 
         .contenedor {
+
             width: 100%;
             max-width: 900px;
+
             margin: 0 auto;
-            background: white;
+
             padding: 25px;
+
             border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+
+            /*
+             * Fondo semitransparente.
+             * Permite que se vea la imagen de fondo.
+             */
+
+            background: rgba(255, 255, 255, 0.82);
+
+            /*
+             * Desenfoca ligeramente el fondo
+             * que queda detrás del contenedor.
+             */
+
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+
+            box-shadow:
+                0 2px 20px rgba(0, 0, 0, 0.35);
         }
 
+
         h1 {
+
             margin-top: 0;
+
             text-align: center;
         }
 
+
+        /* ===================================
+           FILAS
+           =================================== */
+
         .fila {
+
             display: flex;
+
             align-items: center;
+
             gap: 10px;
+
             margin-bottom: 12px;
         }
 
+
         .fila label {
+
             min-width: 170px;
+
             font-weight: bold;
         }
+
+
+        /* ===================================
+           CAMPOS DE TEXTO
+           =================================== */
 
         input {
+
             padding: 7px 9px;
-            border: 1px solid #aaa;
+
+            border: 1px solid rgba(80, 80, 80, 0.65);
+
             border-radius: 5px;
+
             font-size: 15px;
+
+            /*
+             * IMPORTANTE:
+             * El fondo no es completamente opaco.
+             * Esto permite que backdrop-filter
+             * pueda desenfocar lo que hay detrás.
+             */
+
+            background: rgba(255, 255, 255, 0.65);
+
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+
+            transition:
+                background 0.2s ease,
+                box-shadow 0.2s ease,
+                border-color 0.2s ease;
         }
+
+
+        /*
+         * Cuando el usuario está escribiendo,
+         * hacemos el campo ligeramente más visible.
+         */
+
+        input:focus {
+
+            outline: none;
+
+            background: rgba(255, 255, 255, 0.78);
+
+            border-color: #555;
+
+            box-shadow:
+                0 0 0 2px rgba(0, 0, 0, 0.12);
+        }
+
 
         #nombreCuadrilla {
+
             flex: 1;
         }
+
 
         #semilla {
+
             flex: 1;
         }
 
+
+        /* ===================================
+           BOTONES
+           =================================== */
+
         button {
+
             padding: 8px 14px;
+
             border: 1px solid #888;
+
             border-radius: 5px;
-            background: #e6e6e6;
+
+            background: rgba(230, 230, 230, 0.85);
+
             cursor: pointer;
+
             font-size: 14px;
+
+            transition:
+                background 0.2s ease,
+                transform 0.1s ease;
         }
+
 
         button:hover {
-            background: #d5d5d5;
+
+            background: rgba(213, 213, 213, 0.95);
         }
+
+
+        button:active {
+
+            transform: scale(0.98);
+        }
+
 
         .boton-generar {
+
             display: block;
+
             width: 100%;
+
             margin: 20px 0;
+
             padding: 12px;
+
             font-size: 16px;
+
             font-weight: bold;
         }
+
+
+        /* ===================================
+           SECCIONES
+           =================================== */
 
         .seccion {
+
             margin-top: 20px;
+
             border: 1px solid #bbb;
+
             border-radius: 7px;
+
             overflow: hidden;
+
+            /*
+             * También ligeramente transparente
+             * para mantener visible el fondo.
+             */
+
+            background: rgba(255, 255, 255, 0.50);
+
+            backdrop-filter: blur(3px);
+            -webkit-backdrop-filter: blur(3px);
         }
+
 
         .titulo-seccion {
+
             padding: 10px 15px;
-            background: #e5e5e5;
+
+            background: rgba(229, 229, 229, 0.78);
+
             font-size: 18px;
+
             font-weight: bold;
         }
+
+
+        /* ===================================
+           JUGADORES
+           =================================== */
 
         .jugador {
+
             display: grid;
-            grid-template-columns: 35px 190px 80px 1fr;
+
+            grid-template-columns:
+                35px
+                190px
+                80px
+                1fr;
+
             align-items: center;
+
             gap: 8px;
+
             padding: 8px 12px;
+
             border-top: 1px solid #ddd;
+
+            background: rgba(255, 255, 255, 0.30);
         }
 
+
         .numero {
+
             font-weight: bold;
+
             text-align: right;
         }
 
+
         .nombre-jugador {
+
             width: 100%;
         }
 
+
         .at {
+
             white-space: nowrap;
         }
 
+
         .rasgos {
+
             font-family: Consolas, monospace;
         }
 
+
+        /* ===================================
+           INFORMACIÓN
+           =================================== */
+
         .informacion {
+
             margin-top: 10px;
+
             text-align: center;
+
             color: #666;
+
             font-size: 13px;
         }
 
-        /* -----------------------------------
+
+        /* ===================================
            COMPARTIR
-           ----------------------------------- */
+           =================================== */
 
         .compartir {
+
             margin-top: 25px;
+
             border: 1px solid #bbb;
+
             border-radius: 7px;
+
             overflow: hidden;
+
+            background: rgba(255, 255, 255, 0.50);
+
+            backdrop-filter: blur(3px);
+            -webkit-backdrop-filter: blur(3px);
         }
 
+
         .titulo-compartir {
+
             padding: 10px 15px;
-            background: #e5e5e5;
+
+            background: rgba(229, 229, 229, 0.78);
+
             font-size: 18px;
+
             font-weight: bold;
         }
 
+
         .contenido-compartir {
+
             padding: 15px;
         }
 
+
         .boton-compartir {
+
             margin-bottom: 12px;
         }
 
+
+        /* ===================================
+           TEXTAREA
+           =================================== */
+
         #textoCompartir {
+
             width: 100%;
+
             min-height: 180px;
+
             padding: 10px;
+
             resize: vertical;
+
             border: 1px solid #aaa;
+
             border-radius: 5px;
+
             font-family: Consolas, monospace;
+
             font-size: 14px;
+
+            /*
+             * Mismo efecto de cristal/desenfoque
+             */
+
+            background: rgba(255, 255, 255, 0.65);
+
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+
+            transition:
+                background 0.2s ease,
+                box-shadow 0.2s ease;
         }
+
+
+        #textoCompartir:focus {
+
+            outline: none;
+
+            background: rgba(255, 255, 255, 0.78);
+
+            box-shadow:
+                0 0 0 2px rgba(0, 0, 0, 0.12);
+        }
+
+
+        /* ===================================
+           MÓVILES
+           =================================== */
 
         @media (max-width: 700px) {
 
-            .jugador {
-                grid-template-columns: 30px 1fr;
+            body {
+
+                padding: 10px;
             }
+
+
+            .contenedor {
+
+                padding: 15px;
+            }
+
+
+            .jugador {
+
+                grid-template-columns:
+                    30px
+                    1fr;
+            }
+
 
             .at,
             .rasgos {
+
                 grid-column: 2;
             }
 
+
             .fila {
+
                 flex-wrap: wrap;
             }
 
+
             .fila label {
+
                 width: 100%;
             }
+
         }
+
     </style>
+
 </head>
+
 
 <body>
 
+
 <div class="contenedor">
+
 
     <h1>Dados y Mazmorras</h1>
 
@@ -283,6 +574,7 @@
 
 <script>
 
+
     // ===================================
     // PRNG CON SEMILLA - MULBERRY32
     // ===================================
@@ -296,6 +588,7 @@
             Number(semilla) >>> 0;
 
         if (estadoAleatorio === 0) {
+
             estadoAleatorio = 1;
         }
     }
@@ -329,7 +622,8 @@
     function randint(min, max) {
 
         return Math.floor(
-            aleatorio() * (max - min + 1)
+            aleatorio() *
+            (max - min + 1)
         ) + min;
     }
 
@@ -361,29 +655,35 @@
     // ===================================
 
     const inicios = [
+
         "Al", "Bel", "Cor", "Dar", "El", "Fal",
         "Gar", "Hel", "Kor", "Lor", "Mor", "Nar",
         "Or", "Ral", "Sar", "Tal", "Val", "Zor",
         "Bri", "Dra", "Eri", "Fen", "Gal", "Iri",
         "Ka", "Lyr", "Ma", "Nor", "Syl", "Ther"
+
     ];
 
 
     const medios = [
+
         "a", "e", "i", "o",
         "an", "ar", "el", "en",
         "ir", "or", "un",
         "ae", "ia", "io", "ur",
         "al", "er", "il", "os"
+
     ];
 
 
     const finales = [
+
         "dor", "dan", "ric", "mir", "las",
         "ron", "thar", "len", "var", "nir",
         "dun", "gar", "ion",
         "iel", "ias", "or", "us",
         "eth", "ael", "wyn", "oth"
+
     ];
 
 
@@ -409,7 +709,6 @@
                 elegir(medios) +
                 elegir(finales)
             );
-
         }
 
 
@@ -465,16 +764,19 @@
 
 
         if (resultado === 2) {
+
             return ["Ágil+", "Tenaz+"];
         }
 
 
         if (resultado === 3) {
+
             return ["Ágil+"];
         }
 
 
         if (resultado === 4) {
+
             return ["Tenaz+"];
         }
 
@@ -483,21 +785,25 @@
             resultado >= 5 &&
             resultado <= 9
         ) {
+
             return [];
         }
 
 
         if (resultado === 10) {
+
             return ["Poderoso+"];
         }
 
 
         if (resultado === 11) {
+
             return ["Hábil+"];
         }
 
 
         if (resultado === 12) {
+
             return ["Poderoso++"];
         }
 
@@ -515,21 +821,25 @@
 
 
         if (resultado <= 2) {
+
             return "Poderoso-";
         }
 
 
         if (resultado === 3) {
+
             return "Hábil-";
         }
 
 
         if (resultado === 4) {
+
             return "Ágil-";
         }
 
 
         if (resultado === 5) {
+
             return "Tenaz-";
         }
 
@@ -560,6 +870,7 @@
                 rasgos.includes("Poderoso+") ||
                 rasgos.includes("Poderoso++")
             ) {
+
                 return false;
             }
         }
@@ -569,6 +880,7 @@
             negativo === "Hábil-" &&
             rasgos.includes("Hábil+")
         ) {
+
             return false;
         }
 
@@ -577,6 +889,7 @@
             negativo === "Ágil-" &&
             rasgos.includes("Ágil+")
         ) {
+
             return false;
         }
 
@@ -585,6 +898,7 @@
             negativo === "Tenaz-" &&
             rasgos.includes("Tenaz+")
         ) {
+
             return false;
         }
 
@@ -729,6 +1043,7 @@
                     jugador
                 );
 
+
                 nombresUsados.add(
                     jugador.nombre
                 );
@@ -769,6 +1084,7 @@
                 "div"
             );
 
+
         div.className =
             "jugador";
 
@@ -780,8 +1096,10 @@
                 "div"
             );
 
+
         numeroDiv.className =
             "numero";
+
 
         numeroDiv.textContent =
             numero + ".";
@@ -794,18 +1112,17 @@
                 "input"
             );
 
+
         nombre.type = "text";
+
 
         nombre.className =
             "nombre-jugador";
 
+
         nombre.value =
             jugador.nombre;
 
-
-        // Guardamos el input en el jugador
-        // para poder recuperar posteriormente
-        // el nombre editado.
 
         jugador.elementoNombre =
             nombre;
@@ -818,8 +1135,10 @@
                 "div"
             );
 
+
         at.className =
             "at";
+
 
         at.textContent =
             "AT: " +
@@ -832,6 +1151,7 @@
             document.createElement(
                 "div"
             );
+
 
         rasgos.className =
             "rasgos";
@@ -849,7 +1169,6 @@
 
             rasgos.textContent =
                 "Rasgos: Sin rasgos";
-
         }
 
 
@@ -857,13 +1176,16 @@
             numeroDiv
         );
 
+
         div.appendChild(
             nombre
         );
 
+
         div.appendChild(
             at
         );
+
 
         div.appendChild(
             rasgos
@@ -900,6 +1222,7 @@
                 "div"
             );
 
+
         titulares.className =
             "seccion";
 
@@ -909,8 +1232,10 @@
                 "div"
             );
 
+
         tituloTitulares.className =
             "titulo-seccion";
+
 
         tituloTitulares.textContent =
             "TITULARES";
@@ -949,6 +1274,7 @@
                 "div"
             );
 
+
         reservas.className =
             "seccion";
 
@@ -958,8 +1284,10 @@
                 "div"
             );
 
+
         tituloReservas.className =
             "titulo-seccion";
+
 
         tituloReservas.textContent =
             "RESERVAS";
@@ -1005,7 +1333,6 @@
 
             return "A" +
                 rasgo.substring(4);
-
         }
 
 
@@ -1015,7 +1342,6 @@
 
             return "T" +
                 rasgo.substring(5);
-
         }
 
 
@@ -1025,7 +1351,6 @@
 
             return "H" +
                 rasgo.substring(5);
-
         }
 
 
@@ -1035,7 +1360,6 @@
 
             return "P" +
                 rasgo.substring(8);
-
         }
 
 
@@ -1052,12 +1376,20 @@
         if (
             !cuadrillaActual
         ) {
+
             return;
         }
 
 
-        let texto = document.getElementById("nombreCuadrilla").value + "\n\n";
-texto += "Titulares:\n";
+        let texto =
+            document.getElementById(
+                "nombreCuadrilla"
+            ).value +
+            "\n\n";
+
+
+        texto +=
+            "Titulares:\n";
 
 
         // TITULARES
@@ -1290,7 +1622,9 @@ texto += "Titulares:\n";
         semillaInicial
     );
 
+
 </script>
+
 
 </body>
 </html>
